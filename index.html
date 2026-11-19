@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>This is file upload System</h1>
+    <p>Here you can upload text files and its output will be printed in console </p>
+    <input type="file" name="file_1" id="file_1">
+    <p id="text_preview"></p>
+    <p>Here you can upload image file and its preview will be shown below </p>
+    <input type="file" name="Image_file" id="image_file">
+    <div>
+        <img id="image_preview" style="max-width: 300px;">
+    </div>
+    <button id="imageDownBtn">
+        click here to download preview image
+    </button>
+    <br>
+    <br>
+    <br>
+    <div id="dropZone" style="border:2px dashed #ccc; padding: 20px; text-align:center ">
+        Drop files Here
+    </div>
+    <button id="downBtn">
+        Click to download
+    </button>
+
+
+
+
+    <script>
+
+        const downloadBtn = document.getElementById("downBtn");
+
+        downloadBtn.addEventListener("click", ()=> {
+            const blob = new Blob(["Hello World!"], { type: "text/plain"});
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            // a.download = "example.txt";
+            a.click();
+
+            URL.revokeObjectURL(url); // Clean up
+        })
+
+
+        const file_pointer = document.getElementById("file_1");
+        const text_preview = document.getElementById("text_preview");
+        file_pointer.addEventListener("change", managefile);
+        function managefile(e) {
+            const selectedFile = e.target.files[0];
+
+            const reader = new FileReader();
+            console.log(reader.readyState);
+            reader.onload = () => {
+                console.log(reader.readyState);
+                console.log(reader.result);
+                text_preview.innerText = reader.result;
+            };
+
+            reader.onerror = () => {
+                console.error("Error reading file:", reader.error);
+            };
+
+            reader.readAsText(selectedFile);
+
+            // const selectedFile = files[0]
+            // console.log('FileName: '+ selectedFile.name);
+            // console.log('Type: '+ selectedFile.type);
+            // console.log('Size: '+ selectedFile.size);
+        };
+
+        const image_file_taking_element = document.getElementById("image_file");
+        const image_file_element = document.getElementById("image_preview");
+        const imageDownBtn = document.getElementById("imageDownBtn");
+
+        let selectedImage = null;
+
+        image_file_taking_element.addEventListener("change", (e) => {
+            selectedImage = e.target.files[0];
+
+            if (!selectedImage) return;
+            
+            // const a = document.createElement("a");
+            // 
+            // a.href = url;
+            // a.download = "text";
+            // a.click();
+            // imageDownBtn.appendChild(a);
+
+            // URL.revokeObjectURL(url);
+            const reader = new FileReader();
+
+            reader.onload = () => {
+                image_file_element.src = reader.result;
+            };
+
+            reader.error = () => {
+                console.log("Error while reading image", reader.error);
+            };
+
+            reader.readAsDataURL(selectedImage);
+        });
+
+
+
+        imageDownBtn.addEventListener("click",(e) => {
+            if (!selectedImage) return;
+
+            const url = URL.createObjectURL(selectedImage);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = selectedImage.name;
+
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            URL.revokeObjectURL(url);
+
+        })
+
+
+        const dropZone = document.getElementById("dropZone");
+
+        // dropZone.addEventListener("dragover", event => {
+        //     event.preventDefault();
+        //     dropZone.style.backgroundColor = "#f0f0f0";
+        // });
+
+        // dropZone.addEventListener("dragleave", () => {
+        //     dropZone.style.backgroundColor = "#ffffff";
+        // });
+
+        // dropZone.addEventListener("drop", event => {
+        //     event.preventDefault();
+        //     dropZone.style.backgroundColor = "#fff";
+
+        //     console.log("Inside drop event")
+            
+        //     const files = event.dataTransfer.files;
+        //     for (const file of files) {
+        //         console.log(`File Name: ${file.name}`);
+        //     }
+        // });
+
+        // const dropZone = document.getElementById("dropZone");
+
+        // dropZone.addEventListener("dragover", event => {
+        //     event.preventDefault();
+        //     dropZone.style.backgroundColor = "#f0f0f0";
+        // });
+
+        // dropZone.addEventListener("dragleave", () => {
+        //     dropZone.style.backgroundColor = "#fff";
+        // });
+
+        // dropZone.addEventListener("drop", event => {
+        //     event.preventDefault();
+        //     dropZone.style.backgroundColor = "#fff";
+
+        //     const files = event.dataTransfer.files;
+        //     for (const file of files) {
+        //         console.log(`File Name: ${file.name}`);
+        //     }
+        // });
+    </script>
+</body>
+
+</html>
