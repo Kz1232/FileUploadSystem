@@ -23,11 +23,16 @@
     <br>
     <br>
     <br>
-    <div id="dropZone" style="border:2px dashed #ccc; padding: 20px; text-align:center ">
-        Drop files Here
-    </div>
+    <p>This button let's you download the blob file generated on the web</p>
     <button id="downBtn">
         Click to download
+    </button>
+    <br>
+    <br>
+    <div id="dropZone" style="border:1px dashed black;padding:20px;text-align:center;">Drag Files here</div>
+    <br>
+    <button hidden="true" id="hiddenDownBtn">
+        Click here to download dropped file
     </button>
 
 
@@ -35,6 +40,7 @@
 
     <script>
 
+        // Creating blob file on runtime and providing downloading feature here 
         const downloadBtn = document.getElementById("downBtn");
 
         downloadBtn.addEventListener("click", ()=> {
@@ -43,12 +49,13 @@
 
             const a = document.createElement("a");
             a.href = url;
-            // a.download = "example.txt";
+            a.download = "example.txt";
             a.click();
 
             URL.revokeObjectURL(url); // Clean up
         })
 
+        // File preview related js here 
 
         const file_pointer = document.getElementById("file_1");
         const text_preview = document.getElementById("text_preview");
@@ -70,11 +77,10 @@
 
             reader.readAsText(selectedFile);
 
-            // const selectedFile = files[0]
-            // console.log('FileName: '+ selectedFile.name);
-            // console.log('Type: '+ selectedFile.type);
-            // console.log('Size: '+ selectedFile.size);
         };
+
+
+        // Image preview related js here 
 
         const image_file_taking_element = document.getElementById("image_file");
         const image_file_element = document.getElementById("image_preview");
@@ -87,14 +93,6 @@
 
             if (!selectedImage) return;
             
-            // const a = document.createElement("a");
-            // 
-            // a.href = url;
-            // a.download = "text";
-            // a.click();
-            // imageDownBtn.appendChild(a);
-
-            // URL.revokeObjectURL(url);
             const reader = new FileReader();
 
             reader.onload = () => {
@@ -127,49 +125,40 @@
         })
 
 
+        //Drag file and download buttons here 
         const dropZone = document.getElementById("dropZone");
+        const hiddenDownBtn = document.getElementById("hiddenDownBtn");
+        let droppedFile = null;
 
-        // dropZone.addEventListener("dragover", event => {
-        //     event.preventDefault();
-        //     dropZone.style.backgroundColor = "#f0f0f0";
-        // });
 
-        // dropZone.addEventListener("dragleave", () => {
-        //     dropZone.style.backgroundColor = "#ffffff";
-        // });
+        dropZone.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            dropZone.style.backgroundColor = "#e8dfdf";
+        });
 
-        // dropZone.addEventListener("drop", event => {
-        //     event.preventDefault();
-        //     dropZone.style.backgroundColor = "#fff";
+        dropZone.addEventListener("dragleave",() => {
+            dropZone.style.backgroundColor = "#ffffff";
+        });
 
-        //     console.log("Inside drop event")
-            
-        //     const files = event.dataTransfer.files;
-        //     for (const file of files) {
-        //         console.log(`File Name: ${file.name}`);
-        //     }
-        // });
+        dropZone.addEventListener("drop", event =>{
+            event.preventDefault();
+            dropZone.style.backgroundColor = "red";
 
-        // const dropZone = document.getElementById("dropZone");
+            droppedFile = event.dataTransfer.files[0];
+            console.log('your dropped filename is: '+droppedFile.name);
+            hiddenDownBtn.hidden = false;
+        });
 
-        // dropZone.addEventListener("dragover", event => {
-        //     event.preventDefault();
-        //     dropZone.style.backgroundColor = "#f0f0f0";
-        // });
+        // Baking the dragged file to be downloaded
+        hiddenDownBtn.addEventListener("click", (e) =>{
+            const a = document.createElement("a");
+            const url = URL.createObjectURL(droppedFile);
+            a.href = url;
+            a.download = "droppefile" || droppedFile.name;
+            a.click();
+            URL.revokeObjectURL(url);
+        });
 
-        // dropZone.addEventListener("dragleave", () => {
-        //     dropZone.style.backgroundColor = "#fff";
-        // });
-
-        // dropZone.addEventListener("drop", event => {
-        //     event.preventDefault();
-        //     dropZone.style.backgroundColor = "#fff";
-
-        //     const files = event.dataTransfer.files;
-        //     for (const file of files) {
-        //         console.log(`File Name: ${file.name}`);
-        //     }
-        // });
     </script>
 </body>
 
