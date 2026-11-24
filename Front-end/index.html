@@ -34,17 +34,69 @@
     <button hidden="true" id="hiddenDownBtn">
         Click here to download dropped file
     </button>
+    <br>
+    <br>
+    <button id="talkBackEnd">Communicating with backend</button>
+    <div>Displaying response text here</div>
 
-
+    <div id="status">Idle</div>
+    <p id="responseOutput"></p>
 
 
     <script>
 
+        // talking to backend here
+        const talkBackBtn = document.getElementById("talkBackEnd");
+        const statusDiv = document.getElementById("status");
+        const responseOutput = document.getElementById("responseOutput");
+
+        talkBackBtn.addEventListener("click", sendPost);
+
+        async function sendPost() {
+            const endpoint = "http://localhost:8000/api/items"
+            const payload = {
+                "name": "kshitiz",
+                "description": "this is my name",
+                "price": 14.5,
+                "tax": 13.0
+            }
+
+            statusDiv.textContent="Sending... ";
+
+            try {
+                const response = await fetch(endpoint,{
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok){
+                    throw new Error(`HTTP error: ${response.status}`);
+                }
+                // Read and parse JSON body from the backend response
+                const data = await response.json()
+
+                statusDiv.textContent = "Sucess...";
+
+                responseOutput.textContent = JSON.stringify(data , null, 2)
+                
+            } catch (error) {
+                statusDiv.textContent = "Failed";
+                responseOutput.textContent = `Error: ${error.message}`;
+            }
+        }
+
+
+
+
+
         // Creating blob file on runtime and providing downloading feature here 
         const downloadBtn = document.getElementById("downBtn");
 
-        downloadBtn.addEventListener("click", ()=> {
-            const blob = new Blob(["Hello World!"], { type: "text/plain"});
+        downloadBtn.addEventListener("click", () => {
+            const blob = new Blob(["Hello World!"], { type: "text/plain" });
             const url = URL.createObjectURL(blob);
 
             const a = document.createElement("a");
@@ -92,7 +144,7 @@
             selectedImage = e.target.files[0];
 
             if (!selectedImage) return;
-            
+
             const reader = new FileReader();
 
             reader.onload = () => {
@@ -108,7 +160,7 @@
 
 
 
-        imageDownBtn.addEventListener("click",(e) => {
+        imageDownBtn.addEventListener("click", (e) => {
             if (!selectedImage) return;
 
             const url = URL.createObjectURL(selectedImage);
@@ -136,21 +188,21 @@
             dropZone.style.backgroundColor = "#e8dfdf";
         });
 
-        dropZone.addEventListener("dragleave",() => {
+        dropZone.addEventListener("dragleave", () => {
             dropZone.style.backgroundColor = "#ffffff";
         });
 
-        dropZone.addEventListener("drop", event =>{
+        dropZone.addEventListener("drop", event => {
             event.preventDefault();
             dropZone.style.backgroundColor = "red";
 
             droppedFile = event.dataTransfer.files[0];
-            console.log('your dropped filename is: '+droppedFile.name);
+            console.log('your dropped filename is: ' + droppedFile.name);
             hiddenDownBtn.hidden = false;
         });
 
         // Baking the dragged file to be downloaded
-        hiddenDownBtn.addEventListener("click", (e) =>{
+        hiddenDownBtn.addEventListener("click", (e) => {
             const a = document.createElement("a");
             const url = URL.createObjectURL(droppedFile);
             a.href = url;
